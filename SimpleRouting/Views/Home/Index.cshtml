@@ -1,9 +1,26 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.Extensions.Options
+
+@inject IOptions<RequestLocalizationOptions> locOptions
+
+@{
     ViewData["Title"] = "Home Page";
+
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+
+    var cultureItems = locOptions.Value.SupportedCultures.Select(s => new SelectListItem { Value = s.Name, Text = s.DisplayName }).ToList();
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
+
+    <hr />
+    <form id="cultureForm" asp-action="Index">
+        <select asp-items="cultureItems" onchange="SetCulture(this.value)"></select>
+    </form>
+    <hr />
+
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 
     <br />
@@ -16,3 +33,13 @@
     <br />
     <a asp-controller="Invoices">Link alt</a>
 </div>
+
+        <script>
+
+            function SetCulture(selectCulture){
+                var culture = "/?culture=" + selectedCulture + "&ui-culture" + selectedCulture;
+
+                $("#cultureForm").action = culture;
+                $("#cultureForm").submit();
+            }
+        </script>

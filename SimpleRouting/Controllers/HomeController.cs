@@ -23,6 +23,28 @@ namespace SimpleRouting.Controllers
         public IActionResult Index()
         {
             //ViewBag.A = a;
+
+            //CookieOptions options = new CookieOptions();
+            //options.Expires = DateTimeOffset.Now.AddMilliseconds(10);
+
+            //Response.Cookies.Append("testCookies", "666", options);
+
+            //string test = Request.Cookies["testCookies"];
+
+            //Response.Cookies.Delete("testCookies");
+
+            HttpContext.Session.SetString("product", "PenDrive"); //Можно хранить json, например пользователя
+            string sessionValue = "";
+
+            if(HttpContext.Session != null)
+            {
+                sessionValue = HttpContext.Session.GetString("product");
+                if (string.IsNullOrEmpty(sessionValue))
+                    sessionValue = "Session timed out";
+            }
+
+
+            ViewBag.Id = sessionValue;
             return View();
         }
 
