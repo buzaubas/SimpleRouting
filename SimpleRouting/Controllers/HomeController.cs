@@ -4,10 +4,10 @@ using System.Diagnostics;
 
 namespace SimpleRouting.Controllers
 {
-    [Route("[controller]")] //если существует контроллер с именем указанным здесь и при этом маршрутизации по умолчанию включены при обращений возникнет ошибка
-    [Route("[main]")]
-    [Route("[store]")] //может также использоваться для сокрытия полной ссылки
-    [Route("~/api")] //без наименования контроллера
+    //[Route("[controller]")] //если существует контроллер с именем указанным здесь и при этом маршрутизации по умолчанию включены при обращений возникнет ошибка
+    //[Route("[main]")]
+    //[Route("[store]")] //может также использоваться для сокрытия полной ссылки
+    //[Route("~/api")] //без наименования контроллера
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -18,15 +18,15 @@ namespace SimpleRouting.Controllers
         }
 
         //[HttpGet]
-        [Route("[controller]/{int:0}/{name: maxlength(10)}")]
-        [Route("", Name="INDEXER")]
+        //[Route("[controller]/{int:0}/{name: maxlength(10)}")]
+        //[Route("", Name="INDEXER")]
         public IActionResult Index()
         {
             //ViewBag.A = a;
             return View();
         }
 
-        [Route("[controller]/[action]")] //маршрутизация с помощью атрибутов имеет приоритет
+        /*[Route("[controller]/[action]")]*/ //маршрутизация с помощью атрибутов имеет приоритет
         public IActionResult Privacy(params string[] obj)
         {
             string controller = RouteData.Values["controller"].ToString();

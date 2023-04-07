@@ -5,4 +5,14 @@
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+    <br />
+
+    <a asp-controller="Home" asp-action="Privacy">Outgoing URL</a> @*используя исходящую маршрутизацию Privacy не будет указано в html, он будет генерировать ссылку из атрибута (tag helper) *@
+
+    <br />
+
+    <a asp-action="Index"> Link</a>
+    <br />
+    <a asp-controller="Invoices">Link alt</a>
 </div>
