@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using SimpleRouting.Models;
 using System.Diagnostics;
 
@@ -11,17 +13,21 @@ namespace SimpleRouting.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IStringLocalizer<HomeController> _localizer;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IStringLocalizer localizer)
         {
             _logger = logger;
+            _localizer = localizer;
         }
 
         //[HttpGet]
         //[Route("[controller]/{int:0}/{name: maxlength(10)}")]
         //[Route("", Name="INDEXER")]
-        public IActionResult Index()
+        public IActionResult Index(string culture, string uiculture)
         {
+            ViewBag.Lang = _localizer["Lang"];
+
             //ViewBag.A = a;
 
             //CookieOptions options = new CookieOptions();
@@ -33,18 +39,26 @@ namespace SimpleRouting.Controllers
 
             //Response.Cookies.Delete("testCookies");
 
-            HttpContext.Session.SetString("product", "PenDrive"); //Можно хранить json, например пользователя
-            string sessionValue = "";
+            //HttpContext.Session.SetString("product", "PenDrive"); //Можно хранить json, например пользователя
+            //string sessionValue = "";
 
-            if(HttpContext.Session != null)
+            //if(HttpContext.Session != null)
+            //{
+            //    sessionValue = HttpContext.Session.GetString("product");
+            //    if (string.IsNullOrEmpty(sessionValue))
+            //        sessionValue = "Session timed out";
+            //}
+
+
+            //ViewBag.Id = sessionValue;
+            if(!string.IsNullOrWhiteSpace(culture))
             {
-                sessionValue = HttpContext.Session.GetString("product");
-                if (string.IsNullOrEmpty(sessionValue))
-                    sessionValue = "Session timed out";
+                Response.Cookies.Append(CookieRequestCultureProvider.DefaultCookieName,
+                 CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)), new CookieOptions { Expires = DateTimeOffset.UtcNow.AddMonths(1) });
             }
+            
 
 
-            ViewBag.Id = sessionValue;
             return View();
         }
 

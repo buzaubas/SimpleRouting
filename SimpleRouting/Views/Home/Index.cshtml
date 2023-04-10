@@ -2,26 +2,36 @@
 @using Microsoft.AspNetCore.Localization
 @using Microsoft.Extensions.Options
 
+
 @inject IOptions<RequestLocalizationOptions> locOptions
+@inject IViewLocalizer localizer
 
 @{
     ViewData["Title"] = "Home Page";
 
     var requestCulture = Context.Features.Get<IRequestCultureFeature>();
 
-    var cultureItems = locOptions.Value.SupportedCultures.Select(s => new SelectListItem { Value = s.Name, Text = s.DisplayName }).ToList();
+    List<SelectListItem> cultureItems = locOptions.Value.SupportedCultures.Select(s => new SelectListItem { Value = s.Name, Text = s.DisplayName }).ToList();
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-
+    <table>
+        <tr>
+            <td>@DateTime.Now.ToLongDateString()</td>
+            <td>@(12345678.00.ToString("c"))</td>
+            <td>@(123.45m.ToString("F2"))</td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
     <hr />
+    @requestCulture.RequestCulture.Culture.Name
     <form id="cultureForm" asp-action="Index">
         <select asp-items="cultureItems" onchange="SetCulture(this.value)"></select>
     </form>
     <hr />
 
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 
     <br />
 
@@ -37,9 +47,10 @@
         <script>
 
             function SetCulture(selectCulture){
-                var culture = "/?culture=" + selectedCulture + "&ui-culture" + selectedCulture;
+                var culture = "/?culture=" + selectCulture/* + "&uiculture" + selectedCulture*/;
 
-                $("#cultureForm").action = culture;
+                document.getElementById("cultureForm").action = culture;
+                //$("#cultureForm").action = culture;
                 $("#cultureForm").submit();
             }
         </script>

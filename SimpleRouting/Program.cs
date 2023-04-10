@@ -24,14 +24,33 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
     var supportedCulture = new[]
     {
-            new CultureInfo("en-US"),
-            new CultureInfo("ru-RU"),
-            new CultureInfo("kk-KZ"),
+            new CultureInfo("en"),
+            new CultureInfo("ru"),
+            new CultureInfo("kk"),
     };
-    options.DefaultRequestCulture = new RequestCulture(culture: "kk-KZ", uiCulture: "kk-KZ");
+    options.DefaultRequestCulture = new RequestCulture(culture: "kk", uiCulture: "kk");
     options.SupportedCultures = supportedCulture;
     options.SupportedUICultures = supportedCulture;
+
+    //options.AddInitialRequestCultureProvider(new MyCultureProvider()); //через SQL запрос в базу данных
+
+    options.AddInitialRequestCultureProvider(new CustomRequestCultureProvider(async context =>
+    {
+        var currentCulture = "kk";
+        var segment = context.Request.Path.Value.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+
+        if (segment.Length >= 1) //2
+        {
+            string lastSegment = segment[segment.Length - 1];
+            currentCulture = lastSegment;
+        }
+
+        var requestCulture = new ProviderCultureResult(currentCulture);
+        return await Task.FromResult(requestCulture);
+    }));
 });
+
+builder.Services.AddLocalization(option => option.ResourcesPath = "Resources");
 
 var app = builder.Build();
 
@@ -83,24 +102,41 @@ app.UseAuthorization();
 //    name: "default",
 //    pattern: "api/{controller=Home}/{action=Index}");
 
-app.MapControllerRoute(
-    name: "defaultApi",
-    pattern: "api/{action}",
-    defaults: new {controller= "Home"} );
+//app.MapControllerRoute(
+//    name: "defaultApi",
+//    pattern: "api/{action}",
+//    defaults: new {controller= "Home"} );
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "api/{controller=Home}/{action=Index}");
-
-//Определение route template
 //app.MapControllerRoute(
 //    name: "default",
-//    //route template для запросов состоящих из двух сегментов
-//    pattern: "{controller=Home}/{action=Index}/{id?}",
+//    pattern: "api/{controller=Home}/{action=Index}");
 
-//    constraints: new
-//    {
-//        number = new IntRouteConstraint()
-//    });
+app.MapControllerRoute(
+    name: "localization",
+    pattern: "kk", 
+    defaults: new { controller = "Home", action = "Index"}); //что бы можно было обращаться localhost:5144/kk-kz
+
+app.MapControllerRoute(
+    name: "localization",
+    pattern: "ru",
+    defaults: new { controller = "Home", action = "Index" }); //что бы можно было обращаться localhost:5144/kk-kz
+
+app.MapControllerRoute(
+    name: "localization",
+    pattern: "en",
+    defaults: new { controller = "Home", action = "Index" }); //что бы можно было обращаться localhost:5144/kk-kz
+
+//Определение route template
+app.MapControllerRoute(
+    name: "default",
+    //route template для запросов состоящих из двух сегментов
+    pattern: "{controller=Home}/{action=Index}/{id?}"
+    //,
+
+    //constraints: new
+    //{
+    //    number = new IntRouteConstraint()
+    //}
+    );
 
 app.Run();
